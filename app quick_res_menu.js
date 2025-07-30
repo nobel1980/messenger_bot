@@ -9,6 +9,7 @@ const request = require('request');
 const pageAccessToken = process.env.PAGE_ACCESS_TOKEN;
 const webhookVerifyToken = process.env.VERIFY_TOKEN;
 const userLanguagePreference = {}; 
+
 // Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
