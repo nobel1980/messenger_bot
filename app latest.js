@@ -1,6 +1,5 @@
 const express = require('express');
 const dotenv = require('dotenv');
-const axios = require('axios');
 const bodyParser = require('body-parser');
 const request = require('request');
 
@@ -44,12 +43,6 @@ app.post('/webhook', (req, res) => {
       } else if (webhookEvent.message) {
         handleMessage(senderPsid, webhookEvent.message);
       }
-
-        getUserProfile(senderPsid, (user) => {
-        console.log(`User clicked: ${user.first_name} ${user.last_name}`);
-        // You can also reply with:
-        `Hi ${user.first_name}, thanks for your message!`
-      });
     });
     res.status(200).send('EVENT_RECEIVED');
   } else {
@@ -158,9 +151,8 @@ function handlePostback(senderPsid, postback) {
 }
 
 // 1. Language Selection
-async function sendLanguageSelection(senderPsid) {
-  const user = await getUserProfile(senderPsid);
-  const text = `Hello, ${user.first_name}! Welcome to BTRC. Please select your language.\nহ্যালো, ${user.first_name}! বিটিআরসিতে আপনাকে স্বাগতম। অনুগ্রহপূর্বক আপনার ভাষা নির্বাচন করুন।`; 
+function sendLanguageSelection(senderPsid) {
+  const text = "Hello! Welcome to BTRC. Please select your language.\nহ্যালো! বিটিআরসিতে আপনাকে স্বাগতম। অনুগ্রহপূর্বক আপনার ভাষা নির্বাচন করুন।";
   const buttons = [
     {
       type: "postback",
@@ -385,30 +377,6 @@ function callSendAPI(senderPsid, response) {
       console.error("Unable to send message:", err);
     }
   });
-}
-
-
-// function getUserProfile(psid, callback) {
-//   const url = `https://graph.facebook.com/${psid}?fields=first_name,last_name,profile_pic&access_token=${process.env.PAGE_ACCESS_TOKEN}`;
-
-//   request({
-//     uri: url,
-//     method: 'GET',
-//   }, (err, res, body) => {
-//     if (!err) {
-//       const user = JSON.parse(body);
-//       callback(user);
-//     } else {
-//       console.error("Error fetching user profile: ", err);
-//     }
-//   });
-// }
-
-async function getUserProfile(psid) {
-  const url = `https://graph.facebook.com/${psid}?fields=first_name,last_name&access_token=${process.env.PAGE_ACCESS_TOKEN}`;
-  const response = await axios.get(url);
-  console.log(`User profile fetched: ${response.data.first_name} ${response.data.last_name}`);
-  return response.data;
 }
 
 function sendComplainFormButton(senderPsid, lang) {
