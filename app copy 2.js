@@ -135,17 +135,11 @@ function handlePostback(senderPsid, postback) {
 
     case 'LANG_BANGLA':
       userLanguage[senderPsid] = 'bangla';
-      callSendAPI(senderPsid, {
-        text: 'আপনি বাংলা ভাষা নির্বাচন করেছেন। এখন আপনি কোন সেবা নিতে চান? 👇'
-      });
       sendMainMenuAsCarousel(senderPsid, 'bangla');
       break;
 
     case 'LANG_ENGLISH':
       userLanguage[senderPsid] = 'english';
-      callSendAPI(senderPsid, {
-        text: 'You have selected English. What service do you want next? 👇'
-      });
       sendMainMenuAsCarousel(senderPsid, 'english');
       break;
 
@@ -154,24 +148,14 @@ function handlePostback(senderPsid, postback) {
       break;
 
     case 'MOBILE_OPERATOR':
-      if (userLanguage[senderPsid] === "bangla") {
-        sendText(senderPsid, "মোবাইল অপারেটর সম্পর্কে জানতে নিচের তালিকা থেকে অপারেটর নির্বাচন করুন 👇");
-      } else {
-        sendText(senderPsid, "To learn about mobile operators, select an operator from the list below. 👇");
-      }
-      setTimeout(() => {
-        sendMobileOperatorAsCarousel(senderPsid, userLanguage[senderPsid]);
-      }, 1000);
+      console.log('Mobile Operator button clicked by:', senderPsid, userLanguage[senderPsid]);
+      sendMobileOperatorAsCarousel(senderPsid, userLanguage[senderPsid]);
+      // sendMobileOperatorQuickReplies(senderPsid, userLanguage[senderPsid]);
     break;
 
     // Optional: add handlers for other menu options here
     default:
-      // sendText(senderPsid, "Thanks! We are working on that feature.");
-      if (userLanguage[senderPsid] === "bn") {
-        sendText(senderPsid, "ধন্যবাদ! আমরা এই ফিচারটির উপর কাজ করছি।");
-      } else {
-        sendText(senderPsid, "Thanks! We are working on that feature.");
-      }
+      sendText(senderPsid, "Thanks! We are working on that feature.");
   }
 }
 
@@ -221,7 +205,7 @@ function sendMainMenuAsCarousel(senderPsid, lang) {
         {
         type: "web_url",
         url: "https://crm.btrc.gov.bd/",
-        title: isBangla ? "📝 অভিযোগ ফর্ম" : "📝 Complaint Form"
+        title: isBangla ? "অভিযোগ ফর্ম" : "Complaint Form"
       },
       {
         type: "phone_number",
@@ -231,7 +215,7 @@ function sendMainMenuAsCarousel(senderPsid, lang) {
       {
         type: "web_url",
         url: "https://www.btrc.gov.bd",
-        title: isBangla ? "🌐 বিটিআরসি ওয়েবসাইট" : "🌐 BTRC Website"
+        title: isBangla ? "বিটিআরসি ওয়েবসাইট" : "BTRC Website"
       }
       ]
     },
@@ -264,21 +248,16 @@ function sendMainMenuAsCarousel(senderPsid, lang) {
       ]
     },
     {
-      title: isBangla ? "হেল্পলাইন নম্বর" : "Helpline Numbers",
-      image_url: `${process.env.BASE_URL}/images/helpline.png`,
+      title: isBangla ? "হেল্পলাইন নম্বর" : "Govt",
       subtitle: isBangla
-        ? "সরকারি এবং টেলকো হেল্পলাইন" : "Govt. & Telco Helpline",
+        ? "সকল জরুরি হেল্পলাইন নম্বর দেখুন।"
+        : "See all important helpline numbers.",
       buttons: [
         {
-          type: "phone_number",
-          title: isBangla ? "📞 সরকারি হেল্পলাইন" : "📞 Govt. Helpline",
-          payload: "+880123456789"
-        },
-        {
-          type: "phone_number",
-          title: isBangla ? "📞 টেলকো হেল্পলাইন" : "📞 Telco Helpline",
-          payload: "+880123456789"
-        },
+          type: "postback",
+          title: isBangla ? "সরকার এবং টেলপো হেল্পলাইন" : "Govt. & Telpo Helpline",
+          payload: "GOVT_TELPO_HELPLINE"
+        }
       ]
     }
   ];
@@ -307,7 +286,7 @@ function sendBTRCOptions(senderPsid, lang) {
       {
         type: "web_url",
         url: "https://crm.btrc.gov.bd/",
-        title: "📝 অভিযোগ ফর্ম"
+        title: "অভিযোগ ফর্ম"
       },
       {
         type: "phone_number",
@@ -317,7 +296,7 @@ function sendBTRCOptions(senderPsid, lang) {
       {
         type: "web_url",
         url: "https://www.btrc.gov.bd",
-        title: "🌐 বিটিআরসি ওয়েবসাইট"
+        title: "বিটিআরসি ওয়েবসাইট"
       }
     ];
   } else {
@@ -326,7 +305,7 @@ function sendBTRCOptions(senderPsid, lang) {
       {
         type: "web_url",
         url: "https://crm.btrc.gov.bd/",
-        title: "📝 Complaint Form"
+        title: "Complaint Form"
       },
       {
         type: "phone_number",
@@ -336,7 +315,7 @@ function sendBTRCOptions(senderPsid, lang) {
       {
         type: "web_url",
         url: "https://www.btrc.gov.bd",
-        title: "🌐 BTRC Website"
+        title: "BTRC Website"
       }
     ];
   }
@@ -403,26 +382,18 @@ function sendMobileOperatorAsCarousel(senderPsid, lang = 'english') {
     {
       title: isBangla ? "গ্রামীণফোন" : "Grameenphone",
       image_url: `${process.env.BASE_URL}/images/grameenphone.png`,
-      subtitle: isBangla ? "📞 গ্রামীণফোন হেল্পলাইন: 121 বা গ্রাহক অভিযোগ নম্বর: ১৫৮" : "📞 Grameenphone Helpline: 121,  Customer Complaint: 158",
+      subtitle: isBangla ? "📞 গ্রামীণফোন হেল্পলাইন: 121 বা 01700100121" : "📞 Grameenphone Helpline: 121 or 01700100121",
       buttons: [
             {
               type: "web_url",
               url: "https://www.grameenphone.com",
-              title: isBangla ? "🌐 ওয়েবসাইট" : "🌐 Visit Website"
+              title: isBangla ? "ওয়েবসাইট" : "🌐 Visit Website"
             },
             {
                 type: "phone_number",
                 title: isBangla ? "📞 হেল্পলাইন" : "📞 GP Helpline",
                 payload: "+8801700000000"
               }       
-      ]
-    },
-        {
-      title: isBangla ? "বাংলালিংক" : "Banglalink",
-      image_url: `${process.env.BASE_URL}/images/banglalink.png`,
-      subtitle: isBangla ? "📞 বাংলালিংক হেল্পলাইন: 121 বা 01911304121" : "📞 Banglalink Helpline: 121 or 01911304121",
-      buttons: [
-        { type: "postback", title: isBangla ? "হেল্পলাইন দেখুন" : "View Helpline", payload: "OPERATOR_BANGLALINK" }
       ]
     },
     {
@@ -432,16 +403,16 @@ function sendMobileOperatorAsCarousel(senderPsid, lang = 'english') {
       buttons: [
         { type: "web_url",
           url: "https://www.robi.com.bd",
-          title: isBangla ? "🌐 ওয়েবসাইট" : "🌐 Visit Website"},
+          title: isBangla ? "ওয়েবসাইট" : "🌐 Visit Website"},
         { type: "phone_number", title: isBangla ? "হেল্পলাইন দেখুন" : "View Helpline", payload: "+8801819400400" }
       ]
     },
-        {
-      title: isBangla ? "এয়ারটেল" : "Airtel",
-      image_url: `${process.env.BASE_URL}/images/airtel.png`,
-      subtitle: isBangla ? "📞 এয়ারটেল হেল্পলাইন: 121 বা 01911304121" : "📞 Airtel Helpline: 121 or 01911304121",
+    {
+      title: isBangla ? "বাংলালিংক" : "Banglalink",
+      image_url: `${process.env.BASE_URL}/images/banglalink.png`,
+      subtitle: isBangla ? "📞 বাংলালিংক হেল্পলাইন: 121 বা 01911304121" : "📞 Banglalink Helpline: 121 or 01911304121",
       buttons: [
-        { type: "postback", title: isBangla ? "হেল্পলাইন দেখুন" : "View Helpline", payload: "OPERATOR_AIRTEL" }
+        { type: "postback", title: isBangla ? "হেল্পলাইন দেখুন" : "View Helpline", payload: "OPERATOR_BANGLALINK" }
       ]
     },
     {
@@ -533,7 +504,7 @@ function sendComplainFormButton(senderPsid, lang) {
                     {
                         "type": "web_url",
                         "url": "https://crm.btrc.gov.bd/",
-                        "title": lang === 'bangla' ? '📝 অভিযোগ ফর্ম' : '📝 Complaint Form',
+                        "title": lang === 'bangla' ? 'অভিযোগ ফর্ম' : 'Complaint Form',
                         "webview_height_ratio": "tall", // or "full", "compact"
                         "messenger_extensions": true, // Enable messenger extensions
                         "fallback_url": "https://crm.btrc.gov.bd/" // Fallback for unsupported devices
