@@ -150,24 +150,35 @@ function handlePostback(senderPsid, postback) {
       break;
 
     case 'BTRC':
-      sendBTRCOptions(senderPsid, userLanguage[senderPsid]);
+      (async () => {
+        if (userLanguage[senderPsid] === "bangla") {
+          await sendText(senderPsid, "আপনার অভিযোগ, প্রশ্ন, অনুরোধ ঝামেলাবিহীন জমা দিন: 👇")  ;
+        } else {
+          await sendText(senderPsid, "Submit your complaints, questions, and requests hassle-free.👇");
+        }
+        btrcCarousel(senderPsid, userLanguage[senderPsid]);
+      })();
       break;
 
     case 'MOBILE_OPERATOR':
-      if (userLanguage[senderPsid] === "bangla") {
-        sendText(senderPsid, "মোবাইল অপারেটর সম্পর্কে জানতে নিচের তালিকা থেকে অপারেটর নির্বাচন করুন 👇");
-      } else {
-        sendText(senderPsid, "To learn about mobile operators, select an operator from the list below. 👇");
-      }
-      setTimeout(() => {
+      (async () => {
+        if (userLanguage[senderPsid] === "bangla") {
+          await sendText(senderPsid, "মোবাইল অপারেটর সম্পর্কে জানতে নিচের তালিকা থেকে অপারেটর নির্বাচন করুন 👇");
+        } else {
+          await sendText(senderPsid, "To learn about mobile operators, select an operator from the list below. 👇");
+        }    
+        
         sendMobileOperatorAsCarousel(senderPsid, userLanguage[senderPsid]);
-      }, 1000);
-    break;
+        // sendMobileOperatorQuickReplies(senderPsid, userLanguage[senderPsid]);    
+      })();
+      break;
 
+    case 'SHOW_MAIN_MENU':
+        sendMobileOperatorQuickReplies(senderPsid, userLanguage[senderPsid]);
+      break;
     // Optional: add handlers for other menu options here
     default:
-      // sendText(senderPsid, "Thanks! We are working on that feature.");
-      if (userLanguage[senderPsid] === "bn") {
+      if (userLanguage[senderPsid] === "bangla") {
         sendText(senderPsid, "ধন্যবাদ! আমরা এই ফিচারটির উপর কাজ করছি।");
       } else {
         sendText(senderPsid, "Thanks! We are working on that feature.");
@@ -225,13 +236,16 @@ function sendMainMenuAsCarousel(senderPsid, lang) {
       },
       {
         type: "phone_number",
-        title: isBangla ? "📞 বিটিআরসি হেল্পলাইন" : "📞 BTRC Helpline",
-        payload: "+880123456789"
+        title: isBangla ? "📞 কল বিটিআরসি হেল্পলাইন : ১০০" : "📞 Call BTRC Helpline: 100",
+        payload: "100"
       },
       {
-        type: "web_url",
-        url: "https://www.btrc.gov.bd",
-        title: isBangla ? "🌐 বিটিআরসি ওয়েবসাইট" : "🌐 BTRC Website"
+        // type: "web_url",
+        // url: "https://www.btrc.gov.bd",
+        // title: isBangla ? "🌐 বিটিআরসি ওয়েবসাইট" : "🌐 BTRC Website"
+          type: "postback",
+          title: isBangla ? "অন্যান্য পরিষেবা" : "Other Services",
+          payload: "BTRC"
       }
       ]
     },
@@ -298,56 +312,121 @@ function sendMainMenuAsCarousel(senderPsid, lang) {
 
 
 // 3. BTRC Options
-function sendBTRCOptions(senderPsid, lang) {
-  let text, buttons;
 
-  if (lang === 'bangla') {
-    text = "আপনার অভিযোগ, প্রশ্ন, অনুরোধ ঝামেলাবিহীন জমা দিন: 👇";
-    buttons = [
-      {
-        type: "web_url",
-        url: "https://crm.btrc.gov.bd/",
-        title: "📝 অভিযোগ ফর্ম"
-      },
-      {
-        type: "phone_number",
-        title: "বিটিআরসি হেল্পলাইন",
-        payload: "+880123456789"
-      },
-      {
-        type: "web_url",
-        url: "https://www.btrc.gov.bd",
-        title: "🌐 বিটিআরসি ওয়েবসাইট"
-      }
-    ];
-  } else {
-    text = "Submit your complaints, questions, and requests hassle-free.👇";
-    buttons = [
-      {
-        type: "web_url",
-        url: "https://crm.btrc.gov.bd/",
-        title: "📝 Complaint Form"
-      },
-      {
-        type: "phone_number",
-        title: "BTRC Helpline",
-        payload: "+880123456789"
-      },
-      {
-        type: "web_url",
-        url: "https://www.btrc.gov.bd",
-        title: "🌐 BTRC Website"
-      }
-    ];
-  }
+function btrcCarousel(senderPsid, lang) {
+  const isBangla = lang === 'bangla';
+
+  const elements = [
+    {
+      title: isBangla ? "বিটিআরসি অভিযোগ এবং অবস্থা" : "BTRC Complain and Status",
+      // image_url: `${process.env.BASE_URL}/images/BTRC.png`,
+      subtitle: isBangla
+        ? "বিটিআরসি সম্পর্কিত আপনার পছন্দের পরিষেবা সম্পর্কে জানুন।"
+        : "Learn about your favorite BTRC related services.",
+      buttons: [
+        {
+          type: "web_url",
+          url: "https://crm.btrc.gov.bd/",
+          title: isBangla ? "📝 অভিযোগ ফর্ম" : "📝 Complaint Form"
+        }
+      ]
+    },
+    {
+      title: isBangla ? "ডিএনডি অ্যাক্টিভেশন" : "DND Activation",
+      // image_url: `${process.env.BASE_URL}/images/mobile_operator.png`,
+      subtitle: isBangla
+        ? "গ্রামীনফোনের গ্রাহকদের *১২১*১১০১#, বাংলালিংক এর গ্রাহকদের *১২১*৮*৬#  এবং রবির গ্রাহকদের *৭# ডায়াল করে সেবাটি গ্রহণ করতে পারবে।"
+        : "Grameenphone customers can avail the service by dialing *121*1101#, Banglalink customers *121*8*6#, and Robi customers *7#.",
+      buttons: [
+        {
+          type: "web_url",
+          url: "https://btrc.gov.bd/site/page/e360dbf7-0886-4839-ac00-8b3e80384c47/Do-Not-Disturb-(DND)",
+          title: isBangla ? "🌐 ক্লিক করুন" : "🌐 Click Here"
+        }
+      ]
+    },
+    {
+      title: isBangla ? "সংক্ষিপ্ত-কোড পদ্ধতি" : "Short-Code Procedure",
+      // image_url: `${process.env.BASE_URL}/images/mobile_operator.png`,
+      subtitle: isBangla
+        ? "শর্ট কোড বরাদ্দ পদ্ধতি নির্দেশিকা/শর্ট কোড আবেদন ফর্ম/শর্ট কোড বরাদ্দের শর্তাবলী এবং শর্টকোড বরাদ্দ ও নবায়নের নিয়মাবলী"
+        : "Short code allocation procedure guidelines/Short code application form/Short code allocation terms and conditions and short code allocation and renewal rules",
+      buttons: [
+        {
+          type: "web_url",
+          url: "https://btrc.gov.bd/site/page/05a6a990-5687-4a51-860c-e67ca9487fba/Short-code-Allocation",
+          title: isBangla ? "🌐 ক্লিক করুন" : "🌐 Click Here"
+        }
+      ]
+    },
+    {
+      title: isBangla ? "অননুমোদিত হ্যান্ডসেট নিবন্ধন" : "Unauthorized Handset registration",
+      // image_url: `${process.env.BASE_URL}/images/mobile_operator.png`,
+      subtitle: isBangla
+        ? "অননুমোদিত হ্যান্ডসেট নিবন্ধনের জন্য নির্দেশিকা/আবেদন ফর্ম/শর্তাবলী"
+        : "Guidelines/Application Form/Terms and Conditions for Unauthorized Handset Registration",
+      buttons: [
+        {
+          type: "web_url",
+          url: "https://neir.btrc.gov.bd/auth/login",
+          title: isBangla ? "🌐 ক্লিক করুন" : "🌐 Click Here"
+        }
+      ]
+    },
+    {
+      title: isBangla ? "লাইসেন্স-সম্পর্কিত তথ্য" : "Licence-Related Info",
+      // image_url: `${process.env.BASE_URL}/images/mobile_operator.png`,
+      subtitle: isBangla
+        ? "লাইসেন্স -সম্পর্কিত তথ্য, নির্দেশিকা, আবেদন ফর্ম এবং শর্তাবলী।"
+        : "Licence-related information including guidelines, application forms, and terms and conditions.",
+      buttons: [
+        {
+          type: "web_url",
+          url: "https://lims.btrc.gov.bd",
+          title: isBangla ? "🌐 ক্লিক করুন" : "🌐 Click Here"
+        }
+      ]
+    },
+    {
+      title: isBangla ? "এমএনপি (MNP)" : "MNP (Mobile Number Portability)",
+      // image_url: `${process.env.BASE_URL}/images/mnp.png`,
+      subtitle: isBangla
+        ? "নাম্বার পরিবর্তন না করে অপারেটর পরিবর্তন করুন।"
+        : "Change your operator without changing your number.",
+      buttons: [
+        {
+          type: "postback",
+          title: isBangla ? "বিস্তারিত দেখুন" : "View Details",
+          payload: "MNP"
+        }
+      ]
+    },
+    {
+      title: isBangla ? "হেল্পলাইন নম্বর" : "Helpline Numbers",
+      // image_url: `${process.env.BASE_URL}/images/helpline.png`,
+      subtitle: isBangla
+        ? "সরকারি এবং টেলকো হেল্পলাইন" : "Govt. & Telco Helpline",
+      buttons: [
+        {
+          type: "phone_number",
+          title: isBangla ? "📞 সরকারি হেল্পলাইন" : "📞 Govt. Helpline",
+          payload: "+880123456789"
+        },
+        {
+          type: "phone_number",
+          title: isBangla ? "📞 টেলকো হেল্পলাইন" : "📞 Telco Helpline",
+          payload: "MOBILE_OPERATOR"
+        },
+      ]
+    }
+  ];
 
   const response = {
     attachment: {
       type: "template",
       payload: {
-        template_type: "button",
-        text,
-        buttons
+        template_type: "generic",
+        elements: elements
       }
     }
   };
@@ -359,41 +438,37 @@ function sendMobileOperatorQuickReplies(senderPsid, lang = 'english') {
   console.log('Sending mobile operator quick replies to:', senderPsid, 'Language:', lang);
   const isBangla = lang === 'bangla';
 
-  const message = {
-    recipient: {
-      id: senderPsid
-    },
-    message: {
-      text: isBangla
-        ? "আপনার মোবাইল অপারেটর নির্বাচন করুন:"
-        : "Please select your mobile operator:",
-      quick_replies: [
-        {
-          content_type: "text",
-          title: isBangla ? "গ্রামীণফোন" : "Grameenphone",
-          payload: "OPERATOR_GP"
-        },
-        {
-          content_type: "text",
-          title: isBangla ? "রবি" : "Robi",
-          payload: "OPERATOR_ROBI"
-        },
-        {
-          content_type: "text",
-          title: isBangla ? "বাংলালিংক" : "Banglalink",
-          payload: "OPERATOR_BANGLALINK"
-        },
-        {
-          content_type: "text",
-          title: isBangla ? "টেলিটক" : "Teletalk",
-          payload: "OPERATOR_TELETALK"
-        }
-      ]
-    }
+  const response = {
+    text: isBangla
+      ? "আপনার মোবাইল অপারেটর নির্বাচন করুন:"
+      : "Please select your mobile operator:",
+    quick_replies: [
+      {
+        content_type: "text",
+        title: isBangla ? "গ্রামীণফোন" : "Grameenphone",
+        payload: "OPERATOR_GP"
+      },
+      {
+        content_type: "text",
+        title: isBangla ? "রবি" : "Robi",
+        payload: "OPERATOR_ROBI"
+      },
+      {
+        content_type: "text",
+        title: isBangla ? "বাংলালিংক" : "Banglalink",
+        payload: "OPERATOR_BANGLALINK"
+      },
+      {
+        content_type: "text",
+        title: isBangla ? "টেলিটক" : "Teletalk",
+        payload: "OPERATOR_TELETALK"
+      }
+    ]
   };
- sendText(senderPsid, text);
-  // callSendAPI(senderPsid, message);
+
+  return callSendAPI(senderPsid, response);
 }
+
 //2.1 Mobile Operator Carousel
 function sendMobileOperatorAsCarousel(senderPsid, lang = 'english') {
   console.log('Sending mobile operator carousel to:', senderPsid, 'Language:', lang);
@@ -403,7 +478,7 @@ function sendMobileOperatorAsCarousel(senderPsid, lang = 'english') {
     {
       title: isBangla ? "গ্রামীণফোন" : "Grameenphone",
       image_url: `${process.env.BASE_URL}/images/grameenphone.png`,
-      subtitle: isBangla ? "📞 গ্রামীণফোন হেল্পলাইন: 121 বা গ্রাহক অভিযোগ নম্বর: ১৫৮" : "📞 Grameenphone Helpline: 121,  Customer Complaint: 158",
+      subtitle: isBangla ? "📞 গ্রামীণফোন হেল্পলাইন: ১২১ বা গ্রাহক অভিযোগ নম্বর: ১৫৮, একই অপারেটরের সিম ব্যবহার করুন" : "📞 Grameenphone Helpline: 121,  Customer Complaint: 158, use same operator SIM",
       buttons: [
             {
               type: "web_url",
@@ -412,44 +487,59 @@ function sendMobileOperatorAsCarousel(senderPsid, lang = 'english') {
             },
             {
                 type: "phone_number",
-                title: isBangla ? "📞 হেল্পলাইন" : "📞 GP Helpline",
-                payload: "+8801700000000"
+                title: isBangla ? "📞 কল ১২১" : "📞 Call 121",
+                payload: "121"
               }       
       ]
     },
         {
       title: isBangla ? "বাংলালিংক" : "Banglalink",
       image_url: `${process.env.BASE_URL}/images/banglalink.png`,
-      subtitle: isBangla ? "📞 বাংলালিংক হেল্পলাইন: 121 বা 01911304121" : "📞 Banglalink Helpline: 121 or 01911304121",
+      subtitle: isBangla ? "📞 বাংলালিংক হেল্পলাইন: ১২১, একই অপারেটরের সিম ব্যবহার করুন" : "📞 Banglalink Helpline: 121, use same operator SIM",
       buttons: [
-        { type: "postback", title: isBangla ? "হেল্পলাইন দেখুন" : "View Helpline", payload: "OPERATOR_BANGLALINK" }
+            {
+              type: "web_url",
+              url: "https://www.banglalink.net",
+              title: isBangla ? "🌐 ওয়েবসাইট" : "🌐 Visit Website"
+            },
+            {
+                type: "phone_number",
+                title: isBangla ? "📞 কল ১২১" : "📞 Call 121",
+                payload: "121"
+              }       
       ]
     },
     {
       title: isBangla ? "রবি" : "Robi",
       image_url: `${process.env.BASE_URL}/images/robi.png`,
-      subtitle: isBangla ? "📞 রবি হেল্পলাইন: 123 বা 01819400400" : "📞 Robi Helpline: 123 or 01819400400",
+      subtitle: isBangla ? "📞 রবি হেল্পলাইন: ১২১ বা ০১৮১৯৪০০৪০০, একই অপারেটরের সিম ব্যবহার করুন" : "📞 Robi Helpline: 121 or 01819400400, use same operator SIM",
       buttons: [
         { type: "web_url",
           url: "https://www.robi.com.bd",
           title: isBangla ? "🌐 ওয়েবসাইট" : "🌐 Visit Website"},
-        { type: "phone_number", title: isBangla ? "হেল্পলাইন দেখুন" : "View Helpline", payload: "+8801819400400" }
+        { type: "phone_number", title: isBangla ? "📞 কল ১২১" : "📞 Call 121", payload: "121" }
       ]
     },
-        {
+    {
       title: isBangla ? "এয়ারটেল" : "Airtel",
       image_url: `${process.env.BASE_URL}/images/airtel.png`,
-      subtitle: isBangla ? "📞 এয়ারটেল হেল্পলাইন: 121 বা 01911304121" : "📞 Airtel Helpline: 121 or 01911304121",
+      subtitle: isBangla ? "📞 এয়ারটেল হেল্পলাইন: ১২১ বা ০১৬৭৮৬০০৭৮৬, একই অপারেটরের সিম ব্যবহার করুন" : "📞 Airtel Helpline: 121 or 01678600786, use same operator SIM",
       buttons: [
-        { type: "postback", title: isBangla ? "হেল্পলাইন দেখুন" : "View Helpline", payload: "OPERATOR_AIRTEL" }
+        { type: "web_url",
+          url: "https://www.bd.airtel.com",
+          title: isBangla ? "🌐 ওয়েবসাইট" : "🌐 Visit Website"},
+        { type: "phone_number", title: isBangla ? "📞 কল ১২১" : "📞 Call 121", payload: "121" }
       ]
     },
     {
       title: isBangla ? "টেলিটক" : "Teletalk",
       image_url: `${process.env.BASE_URL}/images/teletalk.png`,
-      subtitle: isBangla ? "📞 টেলিটক হেল্পলাইন: 121 বা 01500121121" : "📞 Teletalk Helpline: 121 or 01500121121",
+      subtitle: isBangla ? "📞 টেলিটক হেল্পলাইন: ১২১ বা ০১৫০০১২১১২১-৯, একই অপারেটরের সিম ব্যবহার করুন" : "📞 Teletalk Helpline: 121 or 01500121121-9, use same operator SIM",
       buttons: [
-        { type: "postback", title: isBangla ? "হেল্পলাইন দেখুন" : "View Helpline", payload: "OPERATOR_TELETALK" }
+        { type: "web_url",
+          url: "https://www.teletalk.com.bd",
+          title: isBangla ? "🌐 ওয়েবসাইট" : "🌐 Visit Website"},
+        { type: "phone_number", title: isBangla ? "📞 কল ১২১" : "📞 Call 121", payload: "121" }
       ]
     }
   ];
@@ -469,32 +559,37 @@ function sendMobileOperatorAsCarousel(senderPsid, lang = 'english') {
 
 
 
-// Text sender
-function sendText(senderPsid, text) {
-  const response = { text };
-  callSendAPI(senderPsid, response);
-}
-
-// Messenger API caller
+// Messenger API caller with Promise
 function callSendAPI(senderPsid, response) {
-  const requestBody = {
-    recipient: { id: senderPsid },
-    message: response
-  };
+  return new Promise((resolve, reject) => {
+    const requestBody = {
+      recipient: { id: senderPsid },
+      message: response
+    };
 
-  request({
-    uri: "https://graph.facebook.com/v18.0/me/messages",
-    qs: { access_token: PAGE_ACCESS_TOKEN },
-    method: "POST",
-    json: requestBody
-  }, (err, res, body) => {
-    if (!err) {
-      console.log("Message sent!");
-    } else {
-      console.error("Unable to send message:", err);
-    }
+    request({
+      uri: "https://graph.facebook.com/v23.0/me/messages",
+      qs: { access_token: PAGE_ACCESS_TOKEN },
+      method: "POST",
+      json: requestBody
+    }, (err, res, body) => {
+      if (!err) {
+        console.log("Message sent!");
+        resolve(body);
+      } else {
+        console.error("Unable to send message:", err);
+        reject(err);
+      }
+    });
   });
 }
+
+// sendText now async/await compatible
+function sendText(senderPsid, text) {
+  const response = { text };
+  return callSendAPI(senderPsid, response);
+}
+
 
 
 // function getUserProfile(psid, callback) {
@@ -544,6 +639,55 @@ function sendComplainFormButton(senderPsid, lang) {
     };
     callSendAPI(senderPsid, response);
 }
+
+async function setMessengerProfile() {
+  const url = `https://graph.facebook.com/v23.0/me/messenger_profile?access_token=${PAGE_ACCESS_TOKEN}`;
+
+  const body = {
+    get_started: {
+      payload: "GET_STARTED"
+    },
+    greeting: [
+      {
+        locale: "default",
+        text: "Hi! Welcome to BTRC. Please avoid sharing personal data (NID, phone, password).\nহ্যালো! বিটিআরসিতে আপনাকে স্বাগতম। দয়া করে ব্যক্তিগত তথ্য শেয়ার করবেন না।"
+      }
+    ],
+    persistent_menu: [
+      {
+        locale: "default",
+        composer_input_disabled: false,
+        call_to_actions: [
+          {
+            type: "postback",
+            title: "🏠 Main Menu",
+            payload: "SHOW_MAIN_MENU"
+          },
+          {
+            type: "web_url",
+            title: "🌐 Powered by Genex Infosys PLC",
+            url: "https://genexinfosys.com",
+            webview_height_ratio: "full"
+          }
+        ]
+      }
+    ]
+  };
+
+  try {
+    const response = await axios.post(url, body, {
+      headers: { "Content-Type": "application/json" }
+    });
+    console.log("Messenger profile set:", response.data);
+  } catch (error) {
+    console.error("Error setting profile:", error.response?.data || error.message);
+  }
+}
+
+app.get("/set-profile", async (req, res) => {
+  await setMessengerProfile();
+  res.send("Messenger profile setup triggered.");
+});
 
 // Start server
 const PORT = process.env.PORT || 3001;
