@@ -269,39 +269,11 @@ function handlePostback(senderPsid, postback) {
       })();
       break;  
     
-    case 'EMERGENCY_SERVICES_HELPLINE':
-      (async () => {
-        if (userLanguage[senderPsid] === "bangla") {
-          await sendText(senderPsid, "জরুরি পরিষেবা হেল্পলাইন সম্পর্কে জানতে নিচের তালিকা থেকে বাটন নির্বাচন করুন 👇");
-        } else {
-          await sendText(senderPsid, "To learn about emergency services helplines, select a button from the list below. 👇");
-        }    
-
-        await delay(2000);
-
-        emergencyServicesHelpline(senderPsid, userLanguage[senderPsid]);
-      })();
-      break;
-
-    case 'LAW_ENFORCEMENT_HELPLINE':
-      (async () => {
-        if (userLanguage[senderPsid] === "bangla") {
-          await sendText(senderPsid, "আইন প্রয়োগকারী হেল্পলাইন সম্পর্কে জানতে নিচের তালিকা থেকে বাটন নির্বাচন করুন 👇");
-        } else {
-          await sendText(senderPsid, "To learn about law enforcement helplines, select a button from the list below. 👇");
-        }    
-
-        await delay(2000);
-
-        lawEnforcementHelpline(senderPsid, userLanguage[senderPsid]);
-      })();
-      break;
-
     case 'MOBILE_OPERATOR_HELPLINE':
       (async () => {
         if (userLanguage[senderPsid] === "bangla") {
           await sendText(senderPsid, "মোবাইল অপারেটর হেল্পলাইন সম্পর্কে জানতে নিচের তালিকা থেকে বাটন নির্বাচন করুন 👇");
-        } else {        
+        } else {
           await sendText(senderPsid, "To learn about mobile operators helplines, select a button from the list below. 👇");
         }    
 
@@ -373,6 +345,9 @@ function sendMainMenuAsCarousel(senderPsid, lang) {
         title: isBangla ? "📝 অভিযোগ ফর্ম" : "📝 Complaint Form"
       },
       {
+        // type: "phone_number",
+        // title: isBangla ? "📞 কল বিটিআরসি হেল্পলাইন : ১০০" : "📞 Call BTRC Helpline: 100",
+        // payload: "100"
           type: "postback",
           title: isBangla ? "অভিযোগের অবস্থা" : "Complain Status",
           payload: "COMPLAIN_STATUS"
@@ -622,7 +597,7 @@ function sendMobileOperatorAsCarousel(senderPsid, lang = 'english') {
               }       
       ]
     },
-    {
+        {
       title: isBangla ? "বাংলালিংক" : "Banglalink",
       image_url: `${process.env.BASE_URL}/images/banglalink.png`,
       subtitle: isBangla ? "📞 বাংলালিংক হেল্পলাইন: ১২১, একই অপারেটরের সিম ব্যবহার করুন" : "📞 Banglalink Helpline: 121, use same operator SIM",
@@ -695,18 +670,36 @@ function govtHelpline(senderPsid, lang = 'english') {
 
   const elements = [
     {
-      title: isBangla ? "আইন প্রয়োগকারী ও জরুরি পরিষেবা হেল্পলাইন" : "Law Enforcement and Emergency Services Helpline",
-      subtitle: isBangla ? "আইন প্রয়োগকারী ও সকল জরুরি পরিষেবা হেল্পলাইন তথ্য" : "Law Enforcement and All Emergency Services Helpline Info",
+      title: isBangla ? "📞 জাতীয় হেল্পলাইন" : "📞 National Helpline",
+      image_url: `${process.env.BASE_URL}/images/national_helpline.png`,
+      subtitle: isBangla ? "📞 জাতীয় হেল্পলাইন: ৩৩৩" : "📞 National Helpline: 333",
       buttons: [
         {
-            type: "postback",
-            title: isBangla ? "জরুরি পরিষেবা হেল্পলাইন" : "Emergency Services Helpline",
-            payload: "EMERGENCY_SERVICES_HELPLINE"
+          type: "web_url",
+          url: "https://www.govt.gov.bd",
+          title: isBangla ? "🌐 ওয়েবসাইট" : "🌐 Visit Website"
         },
         {
-          type: "postback",
-          title: isBangla ? "আইন প্রয়োগকারী হেল্পলাইন" : "Law Enforcement Helpline",
-          payload: "LAW_ENFORCEMENT_HELPLINE"
+          type: "phone_number",
+          title: isBangla ? "📞 কল ৩৩৩" : "📞 Call 333",
+          payload: "333"
+        }
+      ]
+    },
+    {
+      title: isBangla ? "📞 পুলিশ হেল্পলাইন" : "📞 Police Helpline",
+      image_url: `${process.env.BASE_URL}/images/police_helpline.png`,
+      subtitle: isBangla ? "📞 পুলিশ হেল্পলাইন: ৯৯৯" : "📞 Police Helpline: 999",
+      buttons: [
+        {
+          type: "web_url",
+          url: "https://www.police.gov.bd",
+          title: isBangla ? "🌐 ওয়েবসাইট" : "🌐 Visit Website"
+        },
+        {
+          type: "phone_number",
+          title: isBangla ? "📞 কল ৯৯৯" : "📞 Call 999",
+          payload: "999"
         }
       ]
     }
@@ -726,194 +719,14 @@ function govtHelpline(senderPsid, lang = 'english') {
 }
 
 // 4.1.1 Emergency Helpline Numbers
-function emergencyServicesHelpline(senderPsid, lang = 'english') {
+function emergencyHelpline(senderPsid, lang = 'english') {
   const isBangla = lang === 'bangla'; 
-
-  const elements = [
-    {
-      title: isBangla ? " সরকারি তথ্য ও সেবা : ৩৩৩" : "Government Information and Services: 333",
-      image_url: `${process.env.BASE_URL}/images/333.png`,
-      subtitle: isBangla ? "সরকারি তথ্য ও সেবা হেল্পলাইন: ৩৩৩" : "Emergency Services Helpline: 333",
-      buttons: [
-        {
-          type: "web_url",
-          url: "https://333.gov.bd/",
-          title: isBangla ? "🌐 ওয়েবসাইট" : "🌐 Visit Website"
-        },
-        {
-          type: "phone_number",
-          title: isBangla ? "📞 কল(বিডি) ৩৩৩" : "📞 Call(BD) 333",
-          payload: "333"
-        },
-        { type: "phone_number",
-          title: isBangla ? "📞 কল(আন্ত:) +৮৮০৯৬৬৬৭৮৯৩৩৩" : "📞 Call(Int.) +8809666789333",
-          payload: "+8809666789333"
-        }
-      ]
-    },
-    {
-      title: isBangla ? "জাতীয় জরুরি হেল্পলাইন : ৯৯৯" : "National Emergency Helpline: 999",
-      image_url: `${process.env.BASE_URL}/images/999.png`,
-      subtitle: isBangla ? "৯৯৯ - জাতীয় জরুরি সার্ভিস।  পুলিশ, ফায়ার সার্ভিস  ও এ্যাম্বুলেন্স। সকল নাগরিকের জন্য - সম্পুর্ন টোল ফ্রি।" : "999 - National Emergency Service. Police, Fire Service and Ambulance. For all citizens - completely toll free.",
-      buttons: [
-        {
-          type: "web_url",
-          url: "https://www.999.gov.bd/",
-          title: isBangla ? "🌐 ওয়েবসাইট" : "🌐 Visit Website"
-        },
-        {
-          type: "phone_number",
-          title: isBangla ? "📞 কল ৯৯৯" : "📞 Call 999",
-          payload: "999"
-        }
-      ]
-    },
-    {
-      title: isBangla ? "ফায়ার সার্ভিস হেল্পলাইন : ১০২" : "Fire Service Helpline: 102",
-      image_url: `${process.env.BASE_URL}/images/102.png`,
-      subtitle: isBangla ? "ফায়ার সার্ভিস হেল্পলাইন: ১০২" : "Fire Service Helpline: 102",
-      buttons: [
-        {
-          type: "web_url",
-          url: "https://fireservice.gov.bd/",
-          title: isBangla ? "🌐 ওয়েবসাইট" : "🌐 Visit Website"
-        },
-        {
-          type: "phone_number",
-          title: isBangla ? "📞 কল ১০২" : "📞 Call 102",
-          payload: "102"
-        },
-        {
-          type: "phone_number",
-          title: isBangla ? "📞 কল +৮৮০২২২৩৩৫৫৫৫৫" : "📞 Call +8802223355555",
-          payload: "+8802223355555"
-        }
-      ]
-    },
-    {
-      title: isBangla ? "নারী নির্যাতন প্রতিরোধ ন্যাশনাল হেল্পলাইন : ১০৯" : "National Helpline for Prevention of Violence Against Women: 109",
-      image_url: `${process.env.BASE_URL}/images/109.png`,
-      subtitle: isBangla ? "নারীর প্রতি সহিংসতা প্রতিরোধ হেল্পলাইন: ১০৯" : "National Helpline for Prevention of Violence Against Women: 109",
-      buttons: [
-        {
-          type: "web_url",
-          url: "https://mowca.gov.bd/",
-          title: isBangla ? "🌐 ওয়েবসাইট" : "🌐 Visit Website"
-        },
-        {
-          type: "phone_number",
-          title: isBangla ? "📞 কল ১০৯" : "📞 Call 109",
-          payload: "109"
-        }
-      ]
-    }
-  ];
-
-  const response = {
-    attachment: {
-      type: "template",
-      payload: {
-        template_type: "generic",
-        elements: elements
-      }
-    }
-  };
-
-  callSendAPI(senderPsid, response); // Keep message format simple
 
 }
 
 // 4.1.2 Law enforcement Helpline Numbers
 function lawEnforcementHelpline(senderPsid, lang = 'english') {
-  const isBangla = lang === 'bangla'; 
-
-  const elements = [
-    {
-      title: isBangla ? "র‌্যাপিড এ্যাকশন ব্যাটালিয়ন (র‌্যাব)" : "Rapid Action Battalion (RAB)",
-      image_url: `${process.env.BASE_URL}/images/police.png`,
-      subtitle: isBangla ? "র‌্যাপিড এ্যাকশন ব্যাটালিয়ন (র‌্যাব)" : "📞 RAB Helpline: 100",
-      buttons: [
-        {
-          type: "web_url",
-          url: "https://www.rab.gov.bd",
-          title: isBangla ? "🌐 ওয়েবসাইট" : "🌐 Visit Website"
-        },
-        {
-          type: "phone_number",
-          title: isBangla ? "📞 কল +৮৮০১৭৭৭৭২০০২৯" : "📞 Call +8801777720029",
-          payload: "+8801777720029"
-        }
-      ]
-    },
-    {
-      title: isBangla ? "বাংলাদেশ পুলিশ" : "Bangladesh Police",
-      image_url: `${process.env.BASE_URL}/images/police.png`,
-      subtitle: isBangla ? "বাংলাদেশ পুলিশ হেল্পলাইন" : "Bangladesh Police Helpline",
-      buttons: [
-        {
-          type: "web_url",
-          url: "https://www.police.gov.bd",
-          title: isBangla ? "🌐 ওয়েবসাইট" : "🌐 Visit Website"
-        },
-        {
-          type: "phone_number",
-          title: isBangla ? "📞 কল ৯৯৯" : "📞 Call 999",
-          payload: "999"
-        },        
-        {
-          type: "phone_number",
-          title: isBangla ? "📞 কল +৮৮০১৩২০০০১৩০০" : "📞 Call +8801320001300",
-          payload: "+8801320001300"
-        }
-      ]
-    },
-    {
-      title: isBangla ? "বাংলাদেশ পুলিশ" : "CID | Bangladesh Police",
-      image_url: `${process.env.BASE_URL}/images/police.png`,
-      subtitle: isBangla ? "অপরাধ তদন্ত বিভাগ | বাংলাদেশ পুলিশ" : "Criminal Investigation Department | Bangladesh Police",
-      buttons: [
-        {
-          type: "web_url",
-          url: "https://www.cid.gov.bd",
-          title: isBangla ? "🌐 ওয়েবসাইট" : "🌐 Visit Website"
-        },
-        {
-          type: "phone_number",
-          title: isBangla ? "📞 কল +৮৮০১৩২০০১৯৯৯৮" : "📞 Call +8801320019998",
-          payload: "+8801320019998"
-        }
-      ]
-    },    
-    {
-      title: isBangla ? "দুর্নীতি দমন কমিশন (দুদক)" : "Anti-Corruption Commission | ACC",
-      image_url: `${process.env.BASE_URL}/images/fire_service.png`,
-      subtitle: isBangla ? "📞 দুর্নীতি দমন কমিশন হেল্পলাইন: ১০৬" : "📞 Anti-Corruption Commission Helpline: 106",
-      buttons: [
-        {
-          type: "web_url",
-          url: "https://acc.org.bd/",
-          title: isBangla ? "🌐 ওয়েবসাইট" : "🌐 Visit Website"
-        },
-        {
-          type: "phone_number",
-          title: isBangla ? "📞 কল ১০৬" : "📞 Call 106",
-          payload: "106"
-        }
-      ]
-    }
-  ];
-
-  const response = {
-    attachment: {
-      type: "template",
-      payload: {
-        template_type: "generic",
-        elements: elements
-      }
-    }
-  };
-
-  callSendAPI(senderPsid, response); // Keep message format simple
+  const isBangla = lang === 'bangla';
 }
 
 // 4.2 Mobile Operator Helpline Numbers
